@@ -1,0 +1,760 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Explicitly tell Tailwind v4 to scan all source files for class names */
+@source "./**/*.{js,jsx}";
+@source "../../index.html";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+:root {
+  --radius: 0.75rem;
+  /* Dark theme (default) */
+  --background: #0b0f19;
+  --foreground: #f9fafb;
+  --card: #111827;
+  --card-foreground: #f9fafb;
+  --popover: #1f2937;
+  --popover-foreground: #f9fafb;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1f2937;
+  --secondary-foreground: #f9fafb;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #374151;
+  --accent-foreground: #f9fafb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #374151;
+  --input: #111827;
+  --ring: #6366f1;
+  /* Custom grid variables */
+  --grid-header-bg: #1e293b;
+  --grid-header-fg: #f9fafb;
+  --recess-bg: #0f172a;
+  --recess-fg: #94a3b8;
+}
+
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #e2e8f0;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --ring: #6366f1;
+  /* Custom grid variables */
+  --grid-header-bg: #e2e8f0;
+  --grid-header-fg: #0f172a;
+  --recess-bg: #f1f5f9;
+  --recess-fg: #64748b;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--border);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+
+/* ==========================================
+   SCHEDULE GRID TABLE — Custom styles
+   kept separate from Tailwind for print precision
+   ========================================== */
+
+/* ==========================================
+   SCHEDULE GRID TABLE — Custom styles
+   kept separate from Tailwind for print precision
+   ========================================== */
+
+.schedule-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.schedule-grid-table th {
+  background-color: var(--grid-header-bg);
+  color: var(--grid-header-fg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.schedule-grid-table td {
+  border: 1px solid var(--border);
+  height: 64px;
+  padding: 4px;
+  text-align: center;
+  vertical-align: middle;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.time-col {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  background-color: var(--grid-header-bg);
+  width: 105px;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+
+.recess-cell {
+  background-color: var(--recess-bg) !important;
+  color: var(--recess-fg);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.slot-none-cell {
+  background-color: var(--recess-bg) !important;
+  opacity: 0.2;
+}
+
+.lesson-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  text-align: left;
+}
+
+.lesson-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+.lesson-subject {
+  font-weight: 700;
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+.lesson-teacher {
+  font-size: 9px;
+  font-weight: 500;
+  margin-top: 1px;
+  color: var(--muted-foreground);
+}
+
+.cell-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+
+.cell-empty:hover {
+  background-color: var(--muted);
+}
+
+.cell-empty::after {
+  content: '+ Tambah';
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  font-weight: 600;
+}
+
+.cell-empty:hover::after {
+  opacity: 1;
+}
+
+.cell-action-overlay {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  background-color: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.schedule-grid-table td:hover .cell-action-overlay {
+  opacity: 1;
+}
+
+/* Teacher legend table inside scheduler */
+.teacher-legend-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.teacher-legend-table th {
+  background-color: var(--grid-header-bg);
+  color: var(--grid-header-fg);
+  padding: 8px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  transition: background-color 0.3s ease;
+}
+
+.teacher-legend-table td {
+  padding: 6px 10px;
+  color: var(--foreground);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+/* Print-only header */
+.print-header {
+  display: none;
+}
+
+/* Color Picker */
+.color-picker-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.12s ease;
+}
+
+.color-option:hover { transform: scale(1.12); }
+.color-option.selected { border-color: white; transform: scale(1.18); box-shadow: 0 0 0 2px var(--primary); }
+
+/* ==========================================
+   PRINT FRIENDLY STYLING (F4 Landscape)
+   ========================================== */
+@media print {
+  @page {
+    size: 330mm 215mm;
+    margin: 8mm 6mm;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+    font-size: 8pt !important;
+  }
+
+  .no-print, aside, nav, header,
+  .content-header, .scheduler-controls-panel, button,
+  .cell-empty::after, .cell-action-overlay,
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
+/* ==========================================
+   PDF GENERATION STYLE OVERRIDES (F4 Landscape: 330mm x 215mm)
+   ========================================== */
+.generating-pdf {
+  /* Force Light Theme Variables for PDF Export */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #e2e8f0;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --ring: #6366f1;
+  --grid-header-bg: #e2e8f0;
+  --grid-header-fg: #0f172a;
+  --recess-bg: #f1f5f9;
+  --recess-fg: #64748b;
+
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  padding: 10mm 8mm !important; /* Page margins */
+  width: 330mm !important;
+  height: 215mm !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  overflow: hidden !important;
+}
+
+.generating-pdf .print-header {
+  display: block !important;
+  text-align: center !important;
+  margin-bottom: 8px !important;
+}
+
+.generating-pdf .print-header h1 {
+  font-size: 11.5pt !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+}
+
+.generating-pdf .print-header h2 {
+  font-size: 9pt !important;
+  font-weight: 500 !important;
+  margin-top: 1px !important;
+  margin-bottom: 3px !important;
+}
+
+.generating-pdf .print-header-meta {
+  margin-top: 4px !important;
+  font-size: 8pt !important;
+  font-weight: bold !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  border-bottom: 1.5px solid #0f172a !important;
+  padding-bottom: 3px !important;
+}
+
+.generating-pdf .no-print {
+  display: none !important;
+}
+
+.generating-pdf .scheduler-main-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  width: 100% !important;
+  align-items: flex-start !important;
+  margin-bottom: 8px !important;
+  height: 124mm !important; /* Fixed height for the tables section to prevent spill */
+  overflow: hidden !important;
+}
+
+.generating-pdf .grid-wrapper {
+  flex: 3.2 !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: none !important;
+  background-color: #ffffff !important;
+  border-radius: 6px !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+.generating-pdf .teacher-sidebar-table-wrapper {
+  flex: 1 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #94a3b8 !important;
+  box-shadow: none !important;
+  padding: 8px 10px !important; /* Increased wrapper padding */
+  display: block !important;
+  border-radius: 6px !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+}
+
+.generating-pdf .sidebar-table-title {
+  font-size: 8pt !important;
+  color: #0f172a !important;
+  margin-top: 2px !important;
+  margin-bottom: 4px !important;
+  border-left: 2.5px solid #6366f1 !important;
+  padding-left: 4px !important;
+}
+
+.generating-pdf .teacher-table-container {
+  max-height: 114mm !important; /* Keep within wrapper height */
+  overflow: visible !important;
+  border: none !important;
+}
+
+.generating-pdf .schedule-grid-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  height: 100% !important;
+  min-width: 0 !important; /* Force override of standard min-width: 900px to prevent cutoff */
+}
+
+.generating-pdf .schedule-grid-table th {
+  padding: 4px 2px !important;
+  font-size: 7.5pt !important;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #94a3b8 !important;
+  height: 28px !important;
+}
+
+.generating-pdf .schedule-grid-table td {
+  padding: 1.5px !important;
+  border: 1px solid #94a3b8 !important;
+  height: 38px !important; /* Standardized small cell height */
+}
+
+.generating-pdf .time-col {
+  font-size: 7pt !important;
+  width: 80px !important;
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.generating-pdf .recess-cell {
+  background-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  font-size: 7pt !important;
+  font-weight: bold !important;
+}
+
+.generating-pdf .lesson-card {
+  box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  padding: 1px !important;
+  border-radius: 3px !important;
+}
+
+.generating-pdf .lesson-subject {
+  font-size: 7.5pt !important;
+  font-weight: 800 !important;
+}
+
+.generating-pdf .lesson-teacher {
+  font-size: 6pt !important;
+  margin-top: 0px !important;
+}
+
+.generating-pdf .teacher-legend-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+.generating-pdf .teacher-legend-table th {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  padding: 3px 2px !important;
+  font-size: 7pt !important;
+  border-bottom: 1.5px solid #94a3b8 !important;
+}
+
+.generating-pdf .teacher-legend-table td {
+  padding: 2.5px 6px !important; /* Increased padding for the teacher list rows */
+  font-size: 7.2pt !important; /* Slightly larger text for readability */
+  line-height: 1.1 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.generating-pdf .legend-card {
+  border: 1px solid #94a3b8 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  background-color: #ffffff !important;
+  margin-top: 0 !important;
+  padding: 6px 10px !important;
+}
+
+.generating-pdf .legend-card .pt-5 {
+  padding: 0 !important;
+}
+
+.generating-pdf .legend-card-title {
+  font-size: 8pt !important;
+  margin-bottom: 4px !important;
+  border-left: 2.5px solid #6366f1 !important;
+  padding-left: 4px !important;
+}
+
+.generating-pdf .legend-subject-list-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 2px 10px !important;
+}
+
+.generating-pdf .legend-subject-item {
+  font-size: 7pt !important;
+  line-height: 1.15 !important;
+}
+
+.generating-pdf .legend-subject-code {
+  width: 65px !important;
+}
+
+@media print {
+  main, .main-area {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .scheduler-main-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    width: 100% !important;
+    align-items: flex-start !important;
+  }
+
+  .grid-wrapper {
+    flex: 3.2 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: white !important;
+    overflow: visible !important;
+  }
+
+  .teacher-sidebar-table-wrapper {
+    flex: 1 !important;
+    background-color: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  .teacher-table-container {
+    max-height: none !important;
+    overflow: visible !important;
+    border: 1px solid #475569 !important;
+  }
+
+  .schedule-grid-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .schedule-grid-table th {
+    background-color: #f1f5f9 !important;
+    color: black !important;
+    border: 1px solid #475569 !important;
+    font-size: 7.5pt !important;
+    padding: 5px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .schedule-grid-table td {
+    border: 1px solid #475569 !important;
+    height: 33px !important;
+    padding: 1px !important;
+    font-size: 7pt !important;
+    background-color: transparent !important;
+  }
+
+  .time-col {
+    background-color: #f1f5f9 !important;
+    color: black !important;
+    font-size: 7pt !important;
+    width: 82px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .recess-cell {
+    background-color: #cbd5e1 !important;
+    color: black !important;
+    font-weight: bold !important;
+    font-size: 7pt !important;
+    text-transform: uppercase !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .lesson-card {
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    padding: 1px !important;
+    height: 100% !important;
+    border-radius: 3px !important;
+    color: #0f172a !important;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .teacher-legend-table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  .teacher-legend-table th {
+    background-color: #f1f5f9 !important;
+    color: black !important;
+    border-bottom: 2px solid #475569 !important;
+    font-size: 7pt !important;
+    padding: 3px 2px !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .teacher-legend-table tr {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .teacher-legend-table td {
+    padding: 2px 4px !important;
+    font-size: 6.5pt !important;
+    line-height: 1.1 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sidebar-table-title {
+    font-size: 8pt !important;
+    color: black !important;
+    margin-bottom: 4px !important;
+    border-left: 2px solid #6366f1 !important;
+  }
+
+  .legend-card-title {
+    font-size: 8pt !important;
+    color: black !important;
+    border-left: 2px solid #6366f1 !important;
+  }
+
+  .legend-subject-list-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px 10px !important;
+  }
+
+  .legend-subject-item {
+    font-size: 6.5pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .legend-subject-code {
+    width: 68px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .print-header h1 {
+    font-size: 12pt;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  .print-header h2 {
+    font-size: 9.5pt;
+    margin-top: 1px;
+    font-weight: normal;
+  }
+
+  .print-header-meta {
+    margin-top: 5px;
+    font-size: 8pt;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid black;
+    padding-bottom: 3px;
+  }
+}
