@@ -36,6 +36,26 @@ export default function App() {
   const [sidebarHidden, setSidebarHidden] = useState(() => localStorage.getItem('sidebarHidden') === 'true');
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
+  // Mobile responsiveness check
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const mobileLabels = {
+    scheduler: 'Jadwal',
+    dashboard: 'Dashboard',
+    teachers: 'Guru',
+    classes: 'Kelas',
+    subjects: 'Mapel',
+    settings: 'Setelan'
+  };
+
   // Auth States
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -99,6 +119,11 @@ export default function App() {
   const [cellSubjectId, setCellSubjectId] = useState('');
   const [cellTeacherId, setCellTeacherId] = useState('');
   const [collisionWarning, setCollisionWarning] = useState('');
+  const [isMerged, setIsMerged] = useState(false);
+
+  useEffect(() => {
+    setIsMerged(false);
+  }, [cellTeacherId]);
 
   const pastelColors = [
     '#FEF08A', '#BAE6FD', '#FBCFE8', '#FCE7F3', '#FED7AA', '#FFEDD5', '#FEF3C7', '#FDE047',
@@ -135,9 +160,13 @@ export default function App() {
         }
         await loadAllData(me);
       } catch (err) {
-        localStorage.removeItem('token');
-        setUser(null);
-        setLoading(false);
+        if (err.message && err.message.includes('Supabase URL')) {
+          setError(err.message);
+        } else {
+          localStorage.removeItem('token');
+          setUser(null);
+          setLoading(false);
+        }
       }
       setAuthLoading(false);
     };
@@ -385,8 +414,8 @@ export default function App() {
   const getScheduleEntry = (classId, slotId) =>
     schedules.find(s => s.class_id === parseInt(classId) && s.time_slot_id === parseInt(slotId));
 
-  const getTeacherScheduleEntry = (teacherId, slotId) =>
-    schedules.find(s => s.teacher_id === parseInt(teacherId) && s.time_slot_id === parseInt(slotId));
+  const getTeacherScheduleEntries = (teacherId, slotId) =>
+    schedules.filter(s => s.teacher_id === parseInt(teacherId) && s.time_slot_id === parseInt(slotId));
 
   const handleCellClick = (day, slot) => {
     if (user && user.role === 'teacher') return;
@@ -396,6 +425,7 @@ export default function App() {
     setCellSubjectId(existing ? existing.subject_id.toString() : '');
     setCellTeacherId(existing ? existing.teacher_id.toString() : '');
     setCollisionWarning('');
+    setIsMerged(false);
     setIsCellModalOpen(true);
   };
 
@@ -414,7 +444,8 @@ export default function App() {
     try {
       await api.saveSchedule({
         class_id: parseInt(cellParams.classId), time_slot_id: parseInt(cellParams.slotId),
-        subject_id: parseInt(cellSubjectId), teacher_id: parseInt(cellTeacherId)
+        subject_id: parseInt(cellSubjectId), teacher_id: parseInt(cellTeacherId),
+        ignore_conflict: isMerged
       });
       setIsCellModalOpen(false);
       loadAllData();
@@ -697,14 +728,39 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className={cn("flex min-h-screen bg-background text-foreground", theme === 'light' ? 'light' : '')}>
+      <div className={cn("flex min-h-screen bg-background text-foreground", theme === 'light' ? 'light' : '', isMobile ? "flex-col" : "flex-row")}>
+
+        {isMobile && user && (
+          <header className="sticky top-0 z-30 h-14 bg-card border-b border-border px-4 flex items-center justify-between no-print select-none shrink-0">
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+              <span className="font-extrabold text-sm tracking-tight text-foreground bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">PTM Scheduler</span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {activeAcademicYear && (
+                <span className="text-[10px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full font-semibold">
+                  TA {activeAcademicYear.year}
+                </span>
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                onClick={handleLogout}
+              >
+                <LogOut size={16} />
+              </Button>
+            </div>
+          </header>
+        )}
 
         {/* ==========================================
            SIDEBAR
            ========================================== */}
         <aside
           className={cn(
-            "fixed top-0 left-0 h-full z-40 flex flex-col border-r border-border bg-card transition-all duration-300 ease-in-out no-print",
+            "fixed top-0 left-0 h-full z-40 flex flex-col border-r border-border bg-card transition-all duration-300 ease-in-out no-print hidden lg:flex",
             sidebarHidden ? "-translate-x-full w-[260px]" : sidebarCollapsed ? "w-[72px]" : "w-[260px]"
           )}
         >
@@ -829,7 +885,7 @@ export default function App() {
         </aside>
 
         {/* Floating trigger when sidebar hidden */}
-        {sidebarHidden && (
+        {!isMobile && sidebarHidden && (
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -848,9 +904,12 @@ export default function App() {
            ========================================== */}
         <main
           className="flex-1 min-h-screen transition-all duration-300"
-          style={{ marginLeft: sidebarHidden ? 0 : sidebarCollapsed ? 72 : 260 }}
+          style={{ 
+            marginLeft: isMobile ? 0 : (sidebarHidden ? 0 : sidebarCollapsed ? 72 : 260),
+            paddingBottom: isMobile ? '80px' : '0px'
+          }}
         >
-          <div className="p-8 max-w-none">
+          <div className="p-4 sm:p-8 max-w-none">
 
             {/* ==========================================
                TAB 1: SCHEDULER
@@ -858,7 +917,7 @@ export default function App() {
             {activeTab === 'scheduler' && (
               <div>
                 {/* Screen Header */}
-                <div className="flex items-center justify-between mb-6 no-print content-header">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 no-print content-header">
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Jadwal Pelajaran</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Klik sel untuk mengatur atau mengedit jadwal.</p>
@@ -972,7 +1031,7 @@ export default function App() {
                 </Card>
 
                 {/* Grid + Pengampu */}
-                <div className="scheduler-main-layout flex gap-5 items-start">
+                <div className="scheduler-main-layout flex flex-col lg:flex-row gap-5 items-start">
                   {/* Timetable Grid */}
                   <div className="grid-wrapper flex-[3.2] overflow-x-auto rounded-xl border border-border shadow-sm bg-card">
                     <table className="schedule-grid-table">
@@ -1026,10 +1085,10 @@ export default function App() {
                                     </td>
                                   );
                                 } else {
-                                  const entry = getTeacherScheduleEntry(selectedTeacherId, slot.id);
+                                  const entries = getTeacherScheduleEntries(selectedTeacherId, slot.id);
                                   return (
                                     <td key={day} style={{ cursor: 'default' }}>
-                                      {entry ? (
+                                      {entries.length > 0 ? (
                                         <div
                                           className="lesson-card"
                                           style={{
@@ -1038,8 +1097,8 @@ export default function App() {
                                             cursor: 'default'
                                           }}
                                         >
-                                          <span className="lesson-subject">{entry.class_name}</span>
-                                          <span className="lesson-teacher">{entry.subject_code}</span>
+                                          <span className="lesson-subject">{entries.map(e => e.class_name).join(' + ')}</span>
+                                          <span className="lesson-teacher">{entries[0].subject_code}</span>
                                         </div>
                                       ) : (
                                         <span className="text-muted-foreground text-xs">-</span>
@@ -1206,7 +1265,7 @@ export default function App() {
                ========================================== */}
             {activeTab === 'teachers' && (
               <div>
-                <div className="flex items-center justify-between mb-6 content-header">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 content-header">
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Daftar Guru</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Kelola nama, kode, target JP, dan warna identitas guru.</p>
@@ -1265,7 +1324,7 @@ export default function App() {
                ========================================== */}
             {activeTab === 'classes' && (
               <div>
-                <div className="flex items-center justify-between mb-6 content-header">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 content-header">
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Manajemen Kelas</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Tambah kelas, atur tingkat, dan tunjuk wali kelas.</p>
@@ -1311,7 +1370,7 @@ export default function App() {
                ========================================== */}
             {activeTab === 'subjects' && (
               <div>
-                <div className="flex items-center justify-between mb-6 content-header">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 content-header">
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Mata Pelajaran</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Kelola kursus dan singkatan untuk sel jadwal.</p>
@@ -1353,7 +1412,7 @@ export default function App() {
                ========================================== */}
             {activeTab === 'settings' && user?.role === 'admin' && (
               <div>
-                <div className="flex items-center justify-between mb-6 content-header">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 content-header">
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Pengaturan Sistem</h1>
                     <p className="text-muted-foreground mt-1 text-sm">Kelola akun administrator dan kalender tahun ajaran aktif.</p>
@@ -1544,9 +1603,23 @@ export default function App() {
               </div>
 
               {collisionWarning && (
-                <div className="flex items-start gap-3 rounded-xl bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
-                  <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                  <span>{collisionWarning}</span>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3 rounded-xl bg-destructive/10 border border-destructive/30 p-3 text-sm text-destructive">
+                    <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+                    <span>{collisionWarning}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                    <input
+                      type="checkbox"
+                      id="is-merged-class"
+                      checked={isMerged}
+                      onChange={(e) => setIsMerged(e.target.checked)}
+                      className="h-4 w-4 rounded border-border bg-muted/20 text-primary focus:ring-primary cursor-pointer accent-amber-500"
+                    />
+                    <Label htmlFor="is-merged-class" className="text-xs font-semibold text-amber-500 cursor-pointer select-none uppercase tracking-wider">
+                      Kelas Gabungan (Abaikan Tabrakan)
+                    </Label>
+                  </div>
                 </div>
               )}
 
@@ -1584,7 +1657,7 @@ export default function App() {
               </Button>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setIsCellModalOpen(false)}>Batal</Button>
-                <Button onClick={handleSaveCellAssignment} disabled={!!collisionWarning}>
+                <Button onClick={handleSaveCellAssignment} disabled={!!collisionWarning && !isMerged}>
                   Simpan Jadwal
                 </Button>
               </div>
@@ -1840,6 +1913,30 @@ export default function App() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* ==========================================
+           BOTTOM NAVIGATION (MOBILE ONLY)
+           ========================================== */}
+        {isMobile && user && (
+          <div className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border z-40 flex items-center justify-around no-print shadow-lg shadow-black/20 select-none shrink-0">
+            {navItems.map(({ id, icon: Icon, label }) => {
+              const isActive = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={cn(
+                    "flex flex-col items-center justify-center flex-1 h-full py-1 text-[10px] font-semibold transition-all duration-200",
+                    isActive ? "text-primary scale-105" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Icon size={18} className={cn("mb-1", isActive && "text-primary")} />
+                  <span>{mobileLabels[id] || label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
       </div>
     </TooltipProvider>

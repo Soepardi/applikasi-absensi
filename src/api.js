@@ -3,9 +3,16 @@ import { supabase } from './lib/supabase';
 // Map username to a fake email address transparently
 const getFakeEmail = (username) => `${username.trim().toLowerCase()}@ptm.sch.id`;
 
+const checkClient = () => {
+  if (!supabase) {
+    throw new Error('Supabase URL & Anon Key belum terkonfigurasi. Pastikan Anda telah menambahkan variabel lingkungan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY di dashboard Vercel Anda, kemudian jalankan RE-DEPLOY.');
+  }
+};
+
 export const api = {
   // Auth
   login: async (username, password) => {
+    checkClient();
     const email = getFakeEmail(username);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message);
@@ -42,6 +49,7 @@ export const api = {
   },
 
   getMe: async () => {
+    checkClient();
     const { data: { user }, error: uErr } = await supabase.auth.getUser();
     if (uErr || !user) throw new Error('Sesi tidak ditemukan.');
 
@@ -516,17 +524,19 @@ export const api = {
     if (yErr || !activeYear) throw new Error('Tidak ada Tahun Ajaran aktif.');
 
     // Conflict Check
-    const { data: conflict, error: cErr } = await supabase
-      .from('schedules')
-      .select('*, classes(name)')
-      .eq('teacher_id', data.teacher_id)
-      .eq('time_slot_id', data.time_slot_id)
-      .eq('academic_year_id', activeYear.id)
-      .neq('class_id', data.class_id);
-    if (cErr) throw cErr;
+    if (!data.ignore_conflict) {
+      const { data: conflict, error: cErr } = await supabase
+        .from('schedules')
+        .select('*, classes(name)')
+        .eq('teacher_id', data.teacher_id)
+        .eq('time_slot_id', data.time_slot_id)
+        .eq('academic_year_id', activeYear.id)
+        .neq('class_id', data.class_id);
+      if (cErr) throw cErr;
 
-    if (conflict && conflict.length > 0) {
-      throw new Error(`Guru ini sudah mengajar di Kelas '${conflict[0].classes.name}' pada jam yang sama!`);
+      if (conflict && conflict.length > 0) {
+        throw new Error(`Guru ini sudah mengajar di Kelas '${conflict[0].classes.name}' pada jam yang sama!`);
+      }
     }
 
     const { error } = await supabase
