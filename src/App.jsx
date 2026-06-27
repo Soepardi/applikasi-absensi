@@ -1600,7 +1600,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>Atur Jadwal — {cellParams.day}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="rounded-xl bg-muted p-3 text-sm space-y-1">
                 <p><span className="text-muted-foreground">Kelas:</span> <strong>{currentClassObj?.name}</strong></p>
                 <p><span className="text-muted-foreground">Slot:</span> <strong>{cellParams.slotNum} ({cellParams.start} – {cellParams.end})</strong></p>
@@ -1677,7 +1677,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>{isTeacherEdit ? 'Edit Data Guru' : 'Tambah Guru Baru'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="space-y-1.5">
                 <Label>Nama Lengkap</Label>
                 <Input placeholder="e.g. Ahmad Bahrul Hilmy" value={currentTeacher.name || ''} onChange={e => setCurrentTeacher({ ...currentTeacher, name: e.target.value })} />
@@ -1720,7 +1720,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>{isClassEdit ? 'Edit Data Kelas' : 'Tambah Kelas Baru'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="space-y-1.5">
                 <Label>Nama Kelas</Label>
                 <Input placeholder="e.g. VII-A, X-B" value={currentClass.name || ''} onChange={e => setCurrentClass({ ...currentClass, name: e.target.value })} />
@@ -1770,7 +1770,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>{isSubjectEdit ? 'Edit Mata Pelajaran' : 'Tambah Mata Pelajaran'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="space-y-1.5">
                 <Label>Nama Lengkap Mata Pelajaran</Label>
                 <Input placeholder="e.g. Dasar-Dasar Logika Pemrograman" value={currentSubject.name || ''} onChange={e => setCurrentSubject({ ...currentSubject, name: e.target.value })} />
@@ -1795,7 +1795,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>Kelola Kredensial Login Guru</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="rounded-xl bg-muted p-3 text-sm space-y-1">
                 <p><span className="text-muted-foreground">Guru:</span> <strong>{credTeacher?.name}{credTeacher?.title ? `, ${credTeacher?.title}` : ''}</strong></p>
                 <p><span className="text-muted-foreground">Kode:</span> <strong>{credTeacher?.code}</strong></p>
@@ -1847,7 +1847,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>{isAdminEdit ? 'Edit Akun Admin' : 'Tambah Admin Baru'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="space-y-1.5">
                 <Label htmlFor="admin-username">Username</Label>
                 <Input
@@ -1885,7 +1885,7 @@ export default function App() {
             <DialogHeader>
               <DialogTitle>{isAcademicYearEdit ? 'Edit Tahun Ajaran' : 'Tambah Tahun Ajaran Baru'}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-6">
               <div className="space-y-1.5">
                 <Label htmlFor="ay-year">Tahun Ajaran</Label>
                 <Input
