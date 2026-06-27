@@ -905,7 +905,7 @@ export default function App() {
         <main
           className="flex-1 min-h-screen transition-all duration-300"
           style={{ 
-            marginLeft: isMobile ? 0 : (sidebarHidden ? 0 : sidebarCollapsed ? 72 : 260),
+            paddingLeft: isMobile ? 0 : (sidebarHidden ? 0 : sidebarCollapsed ? 72 : 260),
             paddingBottom: isMobile ? '80px' : '0px'
           }}
         >
@@ -1031,7 +1031,7 @@ export default function App() {
                 </Card>
 
                 {/* Grid + Pengampu */}
-                <div className="scheduler-main-layout flex flex-col lg:flex-row gap-5 items-start">
+                <div className="scheduler-main-layout flex flex-col lg:flex-row gap-8 items-start">
                   {/* Timetable Grid */}
                   <div className="grid-wrapper flex-[3.2] overflow-x-auto rounded-xl border border-border shadow-sm bg-card">
                     <table className="schedule-grid-table">
@@ -1115,7 +1115,7 @@ export default function App() {
                   </div>
 
                   {/* Pengampu sidebar — only shown in class view mode */}
-                  {scheduleViewMode === 'class' && <div className="teacher-sidebar-table-wrapper flex-1 rounded-xl border border-border bg-card shadow-sm p-4">
+                  {scheduleViewMode === 'class' && <div className="teacher-sidebar-table-wrapper flex-1 rounded-xl border border-border bg-card shadow-sm p-6">
                     <h3 className="sidebar-table-title text-sm font-bold mb-3 pl-2 border-l-2 border-primary text-card-foreground">Pengampu</h3>
                     <div className="teacher-table-container max-h-[600px] overflow-y-auto rounded-lg border border-border">
                       <table className="teacher-legend-table">
@@ -1185,7 +1185,7 @@ export default function App() {
                     { label: 'JP Terjadwal', value: `${scheduledCount} / ${totalSlotsQuota}`, icon: TrendingUp, color: 'text-amber-400' },
                   ].map(({ label, value, icon: Icon, color }) => (
                     <Card key={label}>
-                      <CardContent className="p-5 flex items-center justify-between">
+                      <CardContent className="p-6 flex items-center justify-between">
                         <div>
                           <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">{label}</p>
                           <p className="text-2xl font-bold text-foreground">{value}</p>
@@ -1300,14 +1300,14 @@ export default function App() {
                               <div className="flex justify-end gap-2">
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button variant="outline" size="sm" onClick={() => handleOpenCredentialsModal(t)}>
+                                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleOpenCredentialsModal(t)}>
                                       <Key size={14} />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>Kredensial Login</TooltipContent>
                                 </Tooltip>
-                                <Button variant="outline" size="sm" onClick={() => handleOpenEditTeacher(t)}><Edit size={14} /></Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDeleteTeacher(t.id)}><Trash2 size={14} /></Button>
+                                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleOpenEditTeacher(t)}><Edit size={14} /></Button>
+                                <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => handleDeleteTeacher(t.id)}><Trash2 size={14} /></Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -1352,8 +1352,8 @@ export default function App() {
                             <TableCell>{c.co_homeroom_teacher_name || <span className="text-muted-foreground italic">Tidak ada</span>}</TableCell>
                             <TableCell className="text-right pr-6">
                               <div className="flex justify-end gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handleOpenEditClass(c)}><Edit size={14} /></Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDeleteClass(c.id)}><Trash2 size={14} /></Button>
+                                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleOpenEditClass(c)}><Edit size={14} /></Button>
+                                <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => handleDeleteClass(c.id)}><Trash2 size={14} /></Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -1394,8 +1394,8 @@ export default function App() {
                             <TableCell>{s.name}</TableCell>
                             <TableCell className="text-right pr-6">
                               <div className="flex justify-end gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handleOpenEditSubject(s)}><Edit size={14} /></Button>
-                                <Button variant="destructive" size="sm" onClick={() => handleDeleteSubject(s.id)}><Trash2 size={14} /></Button>
+                                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => handleOpenEditSubject(s)}><Edit size={14} /></Button>
+                                <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => handleDeleteSubject(s.id)}><Trash2 size={14} /></Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -1495,14 +1495,16 @@ export default function App() {
                                     )}
                                     <Button
                                       variant="outline"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-8 w-8"
                                       onClick={() => handleOpenEditAcademicYear(ay)}
                                     >
                                       <Edit size={14} />
                                     </Button>
                                     <Button
                                       variant="destructive"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-8 w-8"
                                       disabled={ay.is_active}
                                       onClick={() => handleDeleteAcademicYear(ay.id)}
                                     >
@@ -1559,14 +1561,16 @@ export default function App() {
                                   <div className="flex justify-end gap-2">
                                     <Button
                                       variant="outline"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-8 w-8"
                                       onClick={() => handleOpenEditAdmin(adm)}
                                     >
                                       <Edit size={14} />
                                     </Button>
                                     <Button
                                       variant="destructive"
-                                      size="sm"
+                                      size="icon"
+                                      className="h-8 w-8"
                                       disabled={adm.id === user?.id}
                                       onClick={() => handleDeleteAdmin(adm.id)}
                                     >
